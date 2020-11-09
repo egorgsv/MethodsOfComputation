@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 
 namespace LW4
 {
@@ -9,11 +7,11 @@ namespace LW4
         static void Main(string[] args)
         {
             //число промежутков деления [A,B]
-            int m = 15;
+            int m = 1000;
             //точка интерполирования, значение в которой хотим найти
             double X = 0.35;
             //начало и конец отрезка
-            double A = 0, B = 1;
+            double A = 0, B = 5;
 
             double h = (B - A) / m;
             
@@ -24,32 +22,22 @@ namespace LW4
             //     return 1;
             // }
 
-            //многочлен нулевой степени
-            double f0(double x)
-            {
-                return 3.5;
-            }
-            
-            //многочлен первой степени
-            double f1(double x)
-            {
-                return x * 6 + 3.5;
-            }
-            
-            //многочлен третьей степени
-            double f3(double x)
-            {
-                return x * x * x - x * x + 1;
-            }
-
             double f(double x)
             {
+                //многочлен нулевой степени
+                //return 1;
+                //многочлен первой степени
+                //return x;
+                //многочлен третьей степени
+                //return x * x * x;
                 return Math.Sin(2 * x);
             }
 
-            //integral sin(2x) from 0 to 1
-            double J = 0.7080734182735711934;
-
+            //integral sin(2x) from 0 to 5
+            double J = 0.919535764538226226129431973912;
+            //J = 5;
+            //J = 12.5;
+            //J = 156.25;
             
             Console.WriteLine("Приближённое вычисление интеграла по составным квадратурным формулам");
             Console.WriteLine("A = {0}, B = {1}, m = {2}, h = {3}", A, B, m, h);
@@ -89,6 +77,46 @@ namespace LW4
                 y += fx[i];
                 p += f((x[i] + x[i + 1]) / 2);
             }
+            
+            Console.WriteLine("\nCоставная формула левых прямоугольников");
+            double left = leftQuadrature(fx, m, h);
+            Console.WriteLine("J(h) = {0}", left);
+            Console.WriteLine("│J − J(h)│ = {0}", Math.Abs(left - J));
+            double leftError = TheoreticalError(0.5, 2, B, A, h, 0);
+            Console.WriteLine("Теоретическая погрешность: {0}", leftError);  
+            Console.WriteLine("Разность погрешностей: {0}", leftError - Math.Abs(left - J));
+
+            Console.WriteLine("\nCоставная формула правых прямоугольников");
+            double right = rightQuadrature(fx, m, h);
+            Console.WriteLine("J(h) = {0}", right);
+            Console.WriteLine("│J − J(h)│ = {0}", Math.Abs(right - J));
+            double rightError = TheoreticalError(0.5, 2, B, A, h, 0);
+            Console.WriteLine("Теоретическая погрешность: {0}", rightError);  
+            Console.WriteLine("Разность погрешностей: {0}", rightError - Math.Abs(right - J));
+
+            Console.WriteLine("\nCоставная формула средних прямоугольников");
+            double mid = midQuadrature(p, h);
+            Console.WriteLine("J(h) = {0}", mid);
+            Console.WriteLine("│J − J(h)│ = {0}", Math.Abs(mid - J));
+            double midError = TheoreticalError((double) 1/24, 4, B, A, h, 1);
+            Console.WriteLine("Теоретическая погрешность: {0}", midError);  
+            Console.WriteLine("Разность погрешностей: {0}", midError - Math.Abs(mid - J));
+            
+            Console.WriteLine("\nCоставная формула трапеции");
+            double trapezoid = trapezoidQuadrature(fx, m, y);
+            Console.WriteLine("J(h) = {0}", trapezoid);
+            Console.WriteLine("│J − J(h)│ = {0}", Math.Abs(trapezoid - J));
+            double trapError = TheoreticalError((double) 1/12, 4, B, A, h, 1);
+            Console.WriteLine("Теоретическая погрешность: {0}", trapError);  
+            Console.WriteLine("Разность погрешностей: {0}", trapError - Math.Abs(trapezoid - J));
+            
+            Console.WriteLine("\nСимпсон");
+            double Simpson = SimpsonQuadrature(fx, y, h, m, p);
+            Console.WriteLine("J(h) = {0}", Simpson);
+            Console.WriteLine("│J − J(h)│ = {0}", Math.Abs(Simpson - J));
+            double SimpsonError = TheoreticalError((double) 1/2880, 16, B, A, h, 3);
+            Console.WriteLine("Теоретическая погрешность: {0}", SimpsonError);  
+            Console.WriteLine("Разность погрешностей: {0}", SimpsonError - Math.Abs(Simpson - J));
 
             double leftQuadrature(double [] fx, int m, double h)
             {
@@ -127,6 +155,12 @@ namespace LW4
             {
                 double sum = h / 6 * (fx[0] + fx[m] + 2 * y + 4 * p);
                 return sum;
+            }
+
+            double TheoreticalError(double Const, double M, double B, double A, double h, int d)
+            {
+                double error = Const * M * (B - A) * Math.Pow(h, d + 1);
+                return error;
             }
         }
     }
