@@ -7,28 +7,45 @@ namespace LW5
     {
         static void Main(string[] args)
         {
-            //число промежутков деления [A,B]
-            int m = 100;
+            
             //начало и конец отрезка
             double a= 0, b = 1;
-            //A = -1;
+            
+            //число промежутков деления [a,b]
+            int m = 100;
 
             double h = (b - a) / m;
 
+            //N для пп. 3)+4)
             int N1 = 2;
+            //N для п. 5)
             int N2 = 6;
             
-            double f(double x)
+            //для пп. 3)+4)
+            double f1(double x)
             {
+                //многочлен нулевой степени
+                //return 1;
+                //многочлен первой степени
+                //return x;
+                //многочлен третьей степени
+                //return Math.Pow(x, 3);
                 return Math.Sin(x);
-                //return Math.Cos(x);
+            }
+            
+            //для п. 5)
+            double f2(double x)
+            {
+                return Math.Cos(x);
             }
 
+            //вес
             double r(double x)
             {
                 return Math.Pow(x, 0.25);
             }
 
+            //первообразная 
             double Rk(double x, int k)
             {
                 return Math.Pow(x, k + 1.25) / (k + 1.25);
@@ -54,20 +71,35 @@ namespace LW5
             
             h = (b - a) / m;
             
+            Console.WriteLine("________________________________________________________________________________________________");
             Console.WriteLine("\nf(x) = sin(x)");
             Console.WriteLine("r(x) = x^(1/4)");
-
-            //Console.WriteLine("\nf(x) = cos(x)");
-            //Console.WriteLine("r(x) = 1/sqrt(1-x^2)");
-            
             Console.WriteLine("N = {0}", N1);
-            //Console.WriteLine("N = {0}", N2);
-            
-            Console.WriteLine("\nСоставная КФ Гаусса с {0} узлами: {1}", N1, compoundQFGauss(N1, m, a, b, h));
-            
-            Console.WriteLine("\nКФ типа Гаусса с {0} узлами: {1}", N1, QFtypeGauss(N1, a, b));
+
+            double JcompoundQFGauss = compoundQFGauss(N1, m, a, b, h);
+            Console.WriteLine("\nСоставная КФ Гаусса с {0} узлами: {1}", N1, JcompoundQFGauss);
+            Console.WriteLine("________________________________________________________________________________________________");
+
+            double JQFtypeGauss = QFtypeGauss(N1, a, b);
+            Console.WriteLine("\nКФ типа Гаусса с {0} узлами: {1}", N1, JQFtypeGauss);
+            Console.WriteLine("________________________________________________________________________________________________");
+
+            Console.WriteLine("\nКвадратурная формула Мелера");
+            Console.WriteLine("\nf(x) = cos(x)");
+            Console.WriteLine("r(x) = 1/sqrt(1-x^2)");
+            Console.WriteLine("[a, b] = [-1, 1], N = {0}", N2);
+            Console.WriteLine("Хотите изменить параметр N для КФ Мелера?");
+            answ = Console.ReadLine();
+            if (answ == "y")
+            {
+                Console.WriteLine("Введите параметр N:");
+                N2 = Convert.ToInt32(Console.ReadLine());
+                Console.WriteLine("Успешно изменён\n");
+            }
             
             Console.WriteLine("\nКвадратурная формула Мелера с {0} узлами по [a, b] = [-1; 1]: {1}", N2,  Mehler(N2));
+            
+            
 
             double compoundQFGauss(int N, int M, double A, double B, double H)
             {
@@ -81,7 +113,7 @@ namespace LW5
                 {
                     x1 = (t1 + 1) * H / 2 + z;
                     x2 = (t2 + 1) * H / 2 + z;
-                    res += f(x1) * r(x1) + f(x2) * r(x2);
+                    res += f1(x1) * r(x1) + f1(x2) * r(x2);
                     z += H;
                 }
                 res *= H / 2;
@@ -129,9 +161,9 @@ namespace LW5
                     Console.WriteLine("Коэффициенты одного знака и A1 + A2 = μ0.");
                 }
 
-                double J = A1 * f(x1) + A2 * f(x2);
+                double JGauss = A1 * f1(x1) + A2 * f1(x2);
 
-                return J;
+                return JGauss;
             }
             
             double Mehler(int N)
@@ -139,7 +171,7 @@ namespace LW5
                 double res = 0;
                 for (int k = 1; k <= N; k++)
                 {
-                    res += f(Math.Cos((2 * k - 1) * Math.PI / (2 * N)));
+                    res += f2(Math.Cos((2 * k - 1) * Math.PI / (2 * N)));
                 }
 
                 res *= Math.PI / N;
