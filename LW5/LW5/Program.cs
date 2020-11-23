@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Configuration;
+using CenterSpace.NMath;
+using CenterSpace.NMath.Core;
 
 namespace LW5
 {
@@ -38,7 +40,7 @@ namespace LW5
             {
                 return Math.Cos(x);
             }
-
+            
             //вес
             double r(double x)
             {
@@ -60,9 +62,9 @@ namespace LW5
             string answ = Console.ReadLine();
             if (answ == "y")
             {
-                Console.WriteLine("Введите параметр A:");
+                Console.WriteLine("Введите параметр a:");
                 a = Convert.ToDouble(Console.ReadLine());
-                Console.WriteLine("Введите параметр B:");
+                Console.WriteLine("Введите параметр b:");
                 b = Convert.ToDouble(Console.ReadLine());
                 Console.WriteLine("Введите параметр m:");
                 m = Convert.ToInt32(Console.ReadLine());
@@ -71,6 +73,13 @@ namespace LW5
             
             h = (b - a) / m;
             
+            OneVariableFunction F1 = new OneVariableFunction(x => f1(x)*r(x));
+            double J1 = F1.Integrate(a, b);
+            double J1_real = 0.406538;
+            OneVariableFunction F2 = new OneVariableFunction(x => f2(x)* (1/Math.Sqrt(1-x*x)));
+            double J2 = F2.Integrate(-1, 1);
+            double J2_real = 2.4039394306344129982733248925915112237;
+            
             Console.WriteLine("________________________________________________________________________________________________");
             Console.WriteLine("\nf(x) = sin(x)");
             Console.WriteLine("r(x) = x^(1/4)");
@@ -78,10 +87,18 @@ namespace LW5
 
             double JcompoundQFGauss = compoundQFGauss(N1, m, a, b, h);
             Console.WriteLine("\nСоставная КФ Гаусса с {0} узлами: {1}", N1, JcompoundQFGauss);
+            if (!Double.IsNaN(J1))
+                Console.WriteLine(Math.Abs(JcompoundQFGauss - J1));
+            if (a == 0 && b == 1)
+                Console.WriteLine(Math.Abs(JcompoundQFGauss - J1_real));
             Console.WriteLine("________________________________________________________________________________________________");
 
             double JQFtypeGauss = QFtypeGauss(N1, a, b);
             Console.WriteLine("\nКФ типа Гаусса с {0} узлами: {1}", N1, JQFtypeGauss);
+            if (!Double.IsNaN(J1))
+                Console.WriteLine(Math.Abs(JQFtypeGauss - J1));
+            if (a == 0 && b == 1)
+                Console.WriteLine(Math.Abs(JQFtypeGauss - J1_real));
             Console.WriteLine("________________________________________________________________________________________________");
 
             Console.WriteLine("\nКвадратурная формула Мелера");
@@ -96,9 +113,12 @@ namespace LW5
                 N2 = Convert.ToInt32(Console.ReadLine());
                 Console.WriteLine("Успешно изменён\n");
             }
-            
-            Console.WriteLine("\nКвадратурная формула Мелера с {0} узлами по [a, b] = [-1; 1]: {1}", N2,  Mehler(N2));
-            
+
+            double JMehler = Mehler(N2);
+            Console.WriteLine("\nКвадратурная формула Мелера с {0} узлами по [a, b] = [-1; 1]: {1}", N2,  JMehler);
+            if (!Double.IsNaN(J2))
+                Console.WriteLine(Math.Abs(JMehler - J2));
+            Console.WriteLine(Math.Abs(JMehler - J2_real));
             
 
             double compoundQFGauss(int N, int M, double A, double B, double H)

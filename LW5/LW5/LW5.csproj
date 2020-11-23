@@ -5,4 +5,8 @@
         <TargetFramework>net48</TargetFramework>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="CenterSpace.NMath" Version="6.2.0.58" />
+    </ItemGroup>
+
 </Project>
