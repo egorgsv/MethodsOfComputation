@@ -88,17 +88,17 @@ namespace LW5
             double JcompoundQFGauss = compoundQFGauss(N1, m, a, b, h);
             Console.WriteLine("\nСоставная КФ Гаусса с {0} узлами: {1}", N1, JcompoundQFGauss);
             if (!Double.IsNaN(J1))
-                Console.WriteLine(Math.Abs(JcompoundQFGauss - J1));
+                Console.WriteLine("Библиотека NMath {0}", Math.Abs(JcompoundQFGauss - J1));
             if (a == 0 && b == 1)
-                Console.WriteLine(Math.Abs(JcompoundQFGauss - J1_real));
+                Console.WriteLine("Wolfram Alpha {0}", Math.Abs(JcompoundQFGauss - J1_real));
             Console.WriteLine("________________________________________________________________________________________________");
 
             double JQFtypeGauss = QFtypeGauss(N1, a, b);
             Console.WriteLine("\nКФ типа Гаусса с {0} узлами: {1}", N1, JQFtypeGauss);
             if (!Double.IsNaN(J1))
-                Console.WriteLine(Math.Abs(JQFtypeGauss - J1));
+                Console.WriteLine("Библиотека NMath {0}", Math.Abs(JQFtypeGauss - J1));
             if (a == 0 && b == 1)
-                Console.WriteLine(Math.Abs(JQFtypeGauss - J1_real));
+                Console.WriteLine("Wolfram Alpha {0}", Math.Abs(JQFtypeGauss - J1_real));
             Console.WriteLine("________________________________________________________________________________________________");
 
             Console.WriteLine("\nКвадратурная формула Мелера");
@@ -117,8 +117,8 @@ namespace LW5
             double JMehler = Mehler(N2);
             Console.WriteLine("\nКвадратурная формула Мелера с {0} узлами по [a, b] = [-1; 1]: {1}", N2,  JMehler);
             if (!Double.IsNaN(J2))
-                Console.WriteLine(Math.Abs(JMehler - J2));
-            Console.WriteLine(Math.Abs(JMehler - J2_real));
+                Console.WriteLine("Библиотека NMath {0}", Math.Abs(JMehler - J2));
+            Console.WriteLine("Wolfram Alpha {0}", Math.Abs(JMehler - J2_real));
             
 
             double compoundQFGauss(int N, int M, double A, double B, double H)
@@ -192,6 +192,7 @@ namespace LW5
                 for (int k = 1; k <= N; k++)
                 {
                     res += f2(Math.Cos((2 * k - 1) * Math.PI / (2 * N)));
+                    Console.WriteLine(Math.Cos((2 * k - 1) * Math.PI / (2 * N)));
                 }
 
                 res *= Math.PI / N;
