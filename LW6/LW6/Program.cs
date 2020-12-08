@@ -13,9 +13,9 @@ namespace LW6
             double x0 = 0;
             double y0 = 1;
 
-            double f(double x, double y_tepm)
+            double f(double x, double y1)
             {
-                return -y_tepm + x;
+                return -y1 + x;
             }
             
             double y(double x)
@@ -25,7 +25,7 @@ namespace LW6
             
             double Taylor(double x)
             {
-                return 1 - x + Math.Pow(x, 2) - Math.Pow(x, 3)/3 + Math.Pow(x, 4)/12 - Math.Pow(x, 5)/60;
+                return 1 - x + Math.Pow(x, 2) - Math.Pow(x, 3)/3.0 + Math.Pow(x, 4)/12.0 - Math.Pow(x, 5)/60.0;
             }
             
             Console.WriteLine("Решение Задачи Коши для обыкновенного дифференциального уравнения первого порядка");
@@ -36,7 +36,7 @@ namespace LW6
             string answ = Console.ReadLine();
             if (answ == "y")
             {
-                Console.WriteLine("Введите параметр N:");
+                Console.WriteLine("Введите параметр N > 2:");
                 N = Convert.ToInt32(Console.ReadLine());
                 Console.WriteLine("Введите параметр h:");
                 h = Convert.ToDouble(Console.ReadLine());
@@ -63,59 +63,7 @@ namespace LW6
                 Console.WriteLine("{0:F10}  |  {1:F14}  |  {2:F14}", xk[k + 2], Taylor(xk[k + 2]), Math.Abs(Taylor(xk[k + 2]) - y(xk[k + 2])));
             }
             
-            //методом Эйлера, методом Эйлера I и методом Эйлера II в точках xk = x0+k∙h, где k=1,2,...,N
-            Console.WriteLine("\nMетод Эйлера\n");
-            double yk = y0 + h * f(x0, y0);
-            double ykI = y0 + h * f(x0 + h / 2, y0 + h / 2 * f(x0, y0));
-            double ykII = y0 + h / 2 * (f(x0, y0) + f(x0 + h, y0 + h * f(x0, y0)));
-            double yk1 = 0, yk12 = 0, yk1I = 0, Yk1 = 0, yk1II = 0;
-            for (int k = 1; k <= N; k++)
-            {
-                
-                //Mетод Эйлера
-                yk1 = yk + h*f(xk[k + 2], yk);
-                //Mетод Эйлера I
-                yk12 = ykI + h / 2 * f(xk[k + 2], ykI);
-                yk1I = ykI + h * f(xk[k + 2] + h / 2, yk12);
-                //Mетод Эйлера II
-                double fkII = f(xk[k + 2], ykII);
-                Yk1 = ykII +h*fkII;
-                if (k != N)
-                {
-                    yk1II = ykII + h / 2 * (fkII + f(xk[k + 3], Yk1));
-                }
-                Console.WriteLine("{0:F10}  |  {1:F14}  |  {2:F14}  |  {3:F14}", xk[k + 2], yk, ykI, ykII);
-                if (k == N)
-                {
-                    abserror(yk);
-                    abserror(ykI);
-                    abserror(ykII);
-                }
-                yk = yk1;
-                ykI = yk1I;
-                ykII = yk1II;
-            }
-
-            Console.WriteLine("\nМетод Рунге-Кутта 4-го порядка\n");
-            double k1, k2, k3, k4;
-            double yn = y0;
-            double yn1 = 0;
-            for (int k = 1; k <= N; k++)
-            {
-                k1 = h*f(xk[k + 2],yn);
-                k2 = h*f(xk[k + 2] +h/2,yn +k1/2);
-                k3 = h*f(xk[k + 2] +h/2,yn +k2/2);
-                k4 = h*f(xk[k + 2] + h, yn + k3);
-                yn1 = yn + (k1 + 2*k2 + 2*k3 + k4)/6;
-                Console.WriteLine("{0:F10}  |  {1:F14}", xk[k + 2], yn);
-                if (k == N)
-                {
-                    abserror(yn);
-                }
-                yn = yn1;
-            } 
-            
-            Console.WriteLine("\nМетодом Адамса 4-го порядка\n");
+            Console.WriteLine("\nМетод Адамса 4-го порядка\n");
             double [,] diff = new double[N + 3, 6];
             double yn1a;
             for (int i = 0; i < 5; i++)
@@ -152,10 +100,60 @@ namespace LW6
                 Console.WriteLine("{0:F10}  |  {1:F14}", xk[k + 2], diff[k + 2, 0]);
             }
             abserror(diff[N+2, 0]);
-
+            
+            Console.WriteLine("\nМетод Рунге-Кутта 4-го порядка\n");
+            double k1, k2, k3, k4;
+            double yn = y0;
+            double yn1;
+            for (int k = 1; k <= N; k++)
+            {
+                k1 = h*f(xk[k + 1],yn);
+                k2 = h*f(xk[k + 1] + h*0.5,yn + k1*0.5);
+                k3 = h*f(xk[k + 1] + h*0.5,yn + k2*0.5);
+                k4 = h*f(xk[k + 1] + h, yn + k3);
+                yn1 = yn + (k1 + 2*k2 + 2*k3 + k4)/6.0;
+                Console.WriteLine("{0:F10}  |  {1:F14}", xk[k + 2], yn1);
+                yn = yn1;
+            }
+            abserror(yn);
+            
+            //методом Эйлера, методом Эйлера I и методом Эйлера II в точках xk = x0+k∙h, где k=1,2,...,N
+            Console.WriteLine("\nMетод Эйлера\n");
+            Console.WriteLine("        xk        метод Эйлера        метод Эйлера I        метод Эйлера II");
+            double yk = y0 + h * f(x0, y0);
+            double ykI = y0 + h * f(x0 + h / 2, y0 + h / 2 * f(x0, y0));
+            double ykII = y0 + h / 2 * (f(x0, y0) + f(x0 + h, y0 + h * f(x0, y0)));
+            double yk1 = 0, yk12 = 0, yk1I = 0, Yk1 = 0, yk1II = 0;
+            for (int k = 1; k <= N; k++)
+            {
+                
+                //Mетод Эйлера
+                yk1 = yk + h*f(xk[k + 2], yk);
+                //Mетод Эйлера I
+                yk12 = ykI + h / 2 * f(xk[k + 2], ykI);
+                yk1I = ykI + h * f(xk[k + 2] + h / 2, yk12);
+                //Mетод Эйлера II
+                double fkII = f(xk[k + 2], ykII);
+                Yk1 = ykII +h*fkII;
+                if (k != N)
+                {
+                    yk1II = ykII + h / 2 * (fkII + f(xk[k + 3], Yk1));
+                }
+                Console.WriteLine("{0:F10}  |  {1:F14}  |  {2:F14}  |  {3:F14}", xk[k + 2], yk, ykI, ykII);
+                if (k == N)
+                {
+                    abserror(yk);
+                    abserror(ykI);
+                    abserror(ykII);
+                }
+                yk = yk1;
+                ykI = yk1I;
+                ykII = yk1II;
+            }
+            
             void abserror(double num)
             {
-                Console.WriteLine("Aбсолютнуя погрешность: {0}", Math.Abs(num - y(xk[N + 2])));
+                Console.WriteLine("Aбсолютная погрешность: {0}", Math.Abs(num - y(xk[N + 2])));
             }
         }
     }
